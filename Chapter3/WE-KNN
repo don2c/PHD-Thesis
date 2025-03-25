@@ -1,3 +1,5 @@
+# Input: OSN account datasets (Facebook, Google+, Twitter)
+# datasets are loaded as dataframes: facebook_data, googleplus_data, twitter_data
 import weka.core.*;
 import weka.classifiers.lazy.IBk;
 import weka.core.converters.ConverterUtils.DataSource;
