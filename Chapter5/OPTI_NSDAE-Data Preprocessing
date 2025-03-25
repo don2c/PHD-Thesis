@@ -1,6 +1,8 @@
 
 #The proposed OPTI_NSDAE method, includes steps like one-hot encoding, removal of infinity values, and min-max normalization. 
 ### Data Preprocessing
+# Input: OSN account datasets (Facebook, Google+, Twitter)
+# datasets are loaded as dataframes: facebook_data, googleplus_data, twitter_data
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
