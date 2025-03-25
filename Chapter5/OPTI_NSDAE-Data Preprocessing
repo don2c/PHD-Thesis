@@ -1,0 +1,63 @@
+
+#The proposed OPTI_NSDAE method, includes steps like one-hot encoding, removal of infinity values, and min-max normalization. 
+### Data Preprocessing
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.ReplaceMissingValues;
+import weka.filters.unsupervised.attribute.NumericToNominal;
+import weka.filters.unsupervised.attribute.Normalize;
+
+public class DataPreprocessing {
+
+    public static void main(String[] args) {
+        try {
+            // Load dataset
+            Instances data = DataSource.read("path_to_your_dataset.arff");
+
+            // Set class index if it's not already set
+            if (data.classIndex() == -1)
+                data.setClassIndex(data.numAttributes() - 1);
+
+            // Step 1: Replace missing values
+            ReplaceMissingValues replaceMissingValues = new ReplaceMissingValues();
+            replaceMissingValues.setInputFormat(data);
+            data = Filter.useFilter(data, replaceMissingValues);
+
+            // Step 2: Convert numeric attributes to nominal (one-hot encoding)
+            NumericToNominal convert = new NumericToNominal();
+            String[] options = new String[2];
+            options[0] = "-R";
+            options[1] = "first-last";  // range of variables to make nominal
+            convert.setOptions(options);
+            convert.setInputFormat(data);
+            data = Filter.useFilter(data, convert);
+
+            // Step 3: Normalize all data to range [0, 1]
+            Normalize normalize = new Normalize();
+            normalize.setInputFormat(data);
+            data = Filter.useFilter(data, normalize);
+
+            // Save the processed data
+            DataSource.write("processed_dataset.arff", data);
+
+            System.out.println("Data preprocessing completed successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Explanation:
+
+1. Replace Missing Values: Before applying the transformations, it's crucial to handle missing values. 
+The `ReplaceMissingValues` filter in Weka replaces all missing values within nominal and numeric attributes in a dataset.
+
+2. One-Hot Encoding: The `NumericToNominal` filter in Weka is used for converting numeric attributes to nominal, which is similar to one-hot encoding, although not exactly the same. 
+For true one-hot encoding, additional processing might be necessary depending on the specific requirements or using another library.
+
+3. Normalization: The `Normalize` filter scales all numeric values into the [0,1] range, adhering to the min-max normalization approach.
+
+4. File Handling: The processed data is saved back into an ARFF file, which is the standard format used by Weka for datasets.
+
