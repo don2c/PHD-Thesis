@@ -2,6 +2,8 @@ To implement the PSOGSARF approach described, involving Particle Swarm Optimizat
 
 The codes below provides a simplified version of how you might structure the PSOGSARF approach in Java, focusing on integrating PSO and GSA for feature selection, and using Weka for the classification phase:
 
+# Input: OSN account datasets (Facebook, Google+, Twitter)
+# datasets are loaded as dataframes: facebook_data, googleplus_data, twitter_data
 ```java
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
