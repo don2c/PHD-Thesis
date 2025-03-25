@@ -1,0 +1,51 @@
+import weka.core.*;
+import weka.classifiers.lazy.IBk;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.StringToWordVector;
+
+public class WEKNN {
+    public static void main(String[] args) throws Exception {
+        // Load dataset
+        DataSource source = new DataSource("path_to_your_data.arff");
+        Instances data = source.getDataSet();
+        
+        // Set class attribute if not set
+        if (data.classIndex() == -1)
+            data.setClassIndex(data.numAttributes() - 1);
+        
+        // Preprocess data: Convert text attributes into numeric vectors using Word2Vec
+        StringToWordVector filter = new StringToWordVector();
+        filter.setInputFormat(data);
+        Instances dataFiltered = Filter.useFilter(data, filter);
+        
+        // Create and train the KNN classifier
+        IBk knn = new IBk(); // default K is 1
+        knn.setKNN(3); // Set K as required (e.g., 3 for 3-NN)
+        knn.buildClassifier(dataFiltered);
+        
+        // Output classification results
+        for (int i = 0; i < dataFiltered.numInstances(); i++) {
+            double label = knn.classifyInstance(dataFiltered.instance(i));
+            System.out.println("Instance " + i + " classified as: " + dataFiltered.classAttribute().value((int) label));
+        }
+    }
+}
+
+
+# Explanation:
+1. Data Loading: The code starts by loading the dataset. Replace `"path_to_your_data.arff"` with the actual path to your dataset.
+
+2. Set Class Attribute: It checks if the class index is set; if not, it sets the last attribute as the class attribute.
+
+3. Data Preprocessing: Uses the `StringToWordVector` filter, which converts string attributes in the data into a set of attributes representing word occurrences (similar to Word2Vec). Note: For true Word2Vec implementation, additional libraries like Deeplearning4j might be needed, as Weka's default filters provide basic text transformations.
+
+4. KNN Classifier: Instantiates Weka's K-nearest neighbors (IBk) classifier, sets the number of neighbors (`K`), and trains it on the preprocessed data.
+
+5. Classification Results: Classifies each instance in the dataset and prints the classification results.
+
+Notes:
+1. Ensure that Weka's jar file is included in your project's build path.
+2. This code assumes a basic understanding of handling datasets in ARFF format. 
+3. The `StringToWordVector` is a basic approach for converting text to vectors. 
+
