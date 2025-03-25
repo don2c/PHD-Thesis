@@ -1,0 +1,67 @@
+#The code include the setup for training the model using the NSDAE approach, 
+which is essentially an autoencoder for feature extraction followed by classification. 
+
+### Java Code for Feature Selection and Classification:
+
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove; // For feature selection
+import weka.filters.unsupervised.attribute.Normalize; // Normalizing the data
+
+public class FeatureSelectionAndClassification {
+
+    public static void main(String[] args) {
+        try {
+            // Load preprocessed dataset
+            Instances trainData = DataSource.read("path_to_your_preprocessed_dataset.arff");
+            trainData.setClassIndex(trainData.numAttributes() - 1); // Set the class index
+
+            // Normalize the data
+            Normalize normalize = new Normalize();
+            normalize.setInputFormat(trainData);
+            Instances normalizedData = Filter.useFilter(trainData, normalize);
+
+            // Feature selection (Remove filter can be customized to keep only selected features)
+            Remove remove = new Remove();
+            remove.setAttributeIndices("1-100"); // Selecting the first 10 attributes
+            remove.setInvertSelection(true);
+            remove.setInputFormat(normalizedData);
+            Instances reducedData = Filter.useFilter(normalizedData, remove);
+
+            // Classifier
+            NSDAE = Opti_NSDAE();
+            // Setting some parameters
+            Opti_NSDAE.setLearningRate(0.1);
+            Opti_NSDAE.setMomentum(0.2);
+            Opti_NSDAE.setTrainingTime(2000);
+            Opti_NSDAE.setHiddenLayers("a");
+
+            // Train the classifier
+            Opti_NSDAE.buildClassifier(reducedData);
+
+            // Save the model
+            weka.core.SerializationHelper.write("path_to_save_model/OPTI_NSDAE.model", Opti_NSDAE);
+
+            System.out.println("Model training completed successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+Explanation:
+
+1. Data Loading: Load the preprocessed dataset which should be in ARFF format. 
+The class index is set to the last attribute, assuming the class attribute is the last one in your dataset.
+
+2. Normalization: The `Normalize` filter in Weka is used to scale all numeric attributes in the range [0,1], ensuring that the model does not bias towards attributes with higher magnitude.
+
+3. Feature Selection: The `Remove` filter is used here to select features using the encoded representations. 
+
+4. Classification: The `Opti_NSDAE` classifier is used for the classification. It is configured with a simple set of hyperparameters, which you can tune as necessary. 
+
+5. Model Training and Saving: The classifier is trained with the selected features, and the model is saved for later use, such as deployment or further evaluation.
+
